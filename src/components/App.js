@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 // https://movies.vitordino.com/
 // Ant Design Components
@@ -31,18 +32,72 @@ import {
   VideoCameraOutlined
 } from '@ant-design/icons';
 
+
 // Ant Design Sub-Components
 const { Title, Text } = Typography;
 const { Header, Content, Footer } = Layout;
 const { Meta } = Card;
 
+import Movie from './Movie';
+
+
 
 function App() {
-  const [username, setUsername] = useState(null);
+  const [username, setUsername] = useState('impressionblend');
+  const [watchlistLength, setWatchlistLength] = useState(null);
 
   useEffect(() => {
     console.log(process.env.PUBLIC_URL);
   }, []);
+
+
+  const searchUser = async () => {
+    console.log(`Searching for user: ${username}`);
+    const response = await axios.get(`https://cors-anywhere.herokuapp.com/https://letterboxd.com/${username}/`);
+    console.log(response.status);
+    // console.log(response.data);
+
+
+    let parser = new DOMParser();
+    let html = parser.parseFromString(response.data, 'text/html');
+    let watchlist = html.getElementsByClassName('watchlist-aside');
+    // console.log(html);
+    let wl = watchlist.item(0).getElementsByClassName('all-link').item(0).innerHTML;
+    console.log(wl);
+    console.log(typeof wl);
+    setWatchlistLength(Number(wl));
+  }
+
+
+  const selectMovie = async () => {
+    const MOVIES_PER_PAGE = 28;
+
+    let randomMovieIndex = Math.floor(Math.random() * watchlistLength);
+    let page = Math.floor(randomMovieIndex / MOVIES_PER_PAGE) + 1;
+    console.log(`Random movie: ${randomMovieIndex}`);
+    console.log(`Page: ${page}`);
+
+    const response = await axios.get(`https://cors-anywhere.herokuapp.com/https://letterboxd.com/${username}/watchlist/page/${page}`);
+    console.log('Fetching watchlist page...');
+    console.log(`Response status: ${response.status}`);
+    
+    let parser = new DOMParser();
+    let html = parser.parseFromString(response.data, 'text/html');
+
+    const pageMovies = html.getElementsByClassName('poster-container');
+    console.log(`Total movies on page: ${pageMovies.length}`);
+
+    let randomMoviePageIndex = randomMovieIndex % MOVIES_PER_PAGE;
+    const randomMovie = pageMovies.item(randomMoviePageIndex);
+
+    console.log('Random movie:');
+    console.log(randomMovie);
+
+    const image = randomMovie.getElementsByClassName('image').item(0);
+    console.log(image.alt)
+
+  }
+
 
   return (
 
@@ -67,67 +122,39 @@ function App() {
                 size="large"
                 placeholder="Enter Letterboxd username"
                 value={username}
-                prefix={<UserOutlined />}  
+                prefix={<UserOutlined />}
+                onChange={(e) => setUsername(e.target.value)}
+                onSearch={() => searchUser()}
               />
               <Alert style={{ marginTop: 12 }} message="Sorry, could not find that user" type="error" closable />
             </Card>
           </Col>
         </Row>
 
+
         <Row justify="center" gutter={[32, 32]}>
           <Col span={20}>
-            <Card style={{ borderRadius: '1.25rem' }} hoverable>
-              <Row>
-                <Col span={14}>
-                  <Title level={1}>
-                   🎬 Star Wars: A New Hope (Episode IV)
-                  </Title>
-                  📅 <Text type="secondary">1970 </Text>
-                  ⏲️ <Text type="secondary">116 min</Text>
-                  <Title level={4}>📖 Plot</Title>
-                  <Text>
-                    Princess Leia is captured and held hostage by the evil Imperial forces in their 
-                    effort to take over the galactic Empire. Venturesome Luke Skywalker and dashing 
-                    captain Han Solo team together with the loveable robot duo R2-D2 and C-3PO to rescue 
-                    the beautiful princess and restore peace and justice in the Empire.
-                  </Text>
-
-                  <Row style={{ marginTop: 16 }}>
-                    <Col span={12}>
-                      {/* Actors */}
-                      <Title level={4}>🌟 Actors</Title>
-                      <Row><Text>Mark Hamill</Text></Row>
-                      <Row><Text>Harrison Ford</Text></Row>
-                      <Row><Text>Carrie Fisher</Text></Row>
-                      <Row><Text>Peter Cushing</Text></Row>
-                    </Col>
-                    <Col span={12}>
-                      {/* Genres */}
-                      <Title level={4}>📙 Genres</Title>
-                      <Row><Text>Adventure</Text></Row>
-                      <Row><Text>Science Fiction</Text></Row>
-                      <Row><Text>Action</Text></Row>
-                      {/* Directors */}
-                      <Title style={{ marginTop: 16 }} level={4}>🎬 Directors</Title>
-                      <Row><Text>George Lucas</Text></Row>
-                      <Row><Text>Anthony Wayne</Text></Row>
-                      <Row><Text>Terry Madden</Text></Row>
-                    </Col>
-                  </Row>
-                </Col>
-                <Col span={8} offset={2}>
-                  <Image
-                    src="https://pbs.twimg.com/media/Eezz1XCVoAAumhu?format=jpg&name=4096x4096"
-                    alt="Movie Poster"
-                    height='auto'
-                    width="auto"
-                  />
-                </Col>
+            <Card style={{ borderRadius: '1.25em' }} hoverable>
+              <Row justify="space-between">
+                <h1>{watchlistLength} Movies Found</h1>
+                <Button 
+                  type="primary"
+                  onClick={() => selectMovie()}
+                >
+                  I'm feeling lucky!
+                </Button>
               </Row>
+              
             </Card>
           </Col>
         </Row>
 
+
+
+
+        <Movie />
+
+        
         <Row justify="center">
           <Spin size="large" />
         </Row>

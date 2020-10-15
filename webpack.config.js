@@ -1,6 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-// const darkTheme = require('@ant-design/dark-theme');
+const Dotenv = require('dotenv-webpack');
 const { getThemeVariables } = require('antd/dist/theme');
 
 module.exports = {
@@ -46,6 +46,10 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: './src/index.html'
-    })
-  ]
+    }),
+    new Dotenv()
+  ],
+  node: {
+    fs: "empty"
+ }
 }

@@ -14,7 +14,7 @@ const { Text, Title } = Typography;
 const Movie = () => {
   return (
     <Row justify="center" gutter={[32, 32]}>
-      <Col span={20}>
+      <Col span={18}>
         <Card style={{ borderRadius: '1.25rem' }} hoverable>
           <Row>
             <Col span={14}>
@@ -35,22 +35,31 @@ const Movie = () => {
                 <Col span={12}>
                   {/* Actors */}
                   <Title level={4}>🌟 Actors</Title>
-                  <Row><Text>Mark Hamill</Text></Row>
-                  <Row><Text>Harrison Ford</Text></Row>
-                  <Row><Text>Carrie Fisher</Text></Row>
-                  <Row><Text>Peter Cushing</Text></Row>
+                  <ul>
+                    <li><Text>Mark Hamill</Text></li>
+                    <li><Text>Harrison Ford</Text></li>
+                    <li><Text>Carrie Fisher</Text></li>
+                    <li><Text>Peter Cushing</Text></li>
+                  </ul>
+
                 </Col>
                 <Col span={12}>
                   {/* Genres */}
                   <Title level={4}>📙 Genres</Title>
-                  <Row><Text>Adventure</Text></Row>
-                  <Row><Text>Science Fiction</Text></Row>
-                  <Row><Text>Action</Text></Row>
+                  <ul>
+                    <li><Text>Adventure</Text></li>
+                    <li><Text>Science Fiction</Text></li>
+                    <li><Text>Action</Text></li>
+                  </ul>
+                  
                   {/* Directors */}
                   <Title style={{ marginTop: 16 }} level={4}>🎬 Directors</Title>
-                  <Row><Text>George Lucas</Text></Row>
-                  <Row><Text>Anthony Wayne</Text></Row>
-                  <Row><Text>Terry Madden</Text></Row>
+                  <ul>
+                    <li><Text>George Lucas</Text></li>
+                    <li><Text>Anthony Wayne</Text></li>
+                    <li><Text>Terry Madden</Text></li>
+                  </ul>
+                  
                 </Col>
               </Row>
             </Col>

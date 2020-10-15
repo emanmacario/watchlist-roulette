@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import theMovieDb from '../tmdb/themoviedb';
 
 // https://movies.vitordino.com/
 // Ant Design Components
@@ -45,10 +46,30 @@ import Movie from './Movie';
 function App() {
   const [username, setUsername] = useState('impressionblend');
   const [watchlistLength, setWatchlistLength] = useState(null);
+  const [movie, setMovie] = useState('The Lighthouse');
+
+  /**
+   * Success callback for TMDb API v3 call
+   */
+  const onSuccess = (data) => {
+    console.log(`Success callback: ${data}`);
+  }
+
+  const onError = (data) => {
+    console.log(`Error callback: ${data}`);
+  }
+
+  // Set the TMDb API key
+  useEffect(() => {
+    console.log("API KEY:")
+    console.log(process.env.TMDB_API_KEY)
+    theMovieDb.common.api_key = process.env.TMDB_API_KEY;
+  }, [])
 
   useEffect(() => {
-    console.log(process.env.PUBLIC_URL);
-  }, []);
+    console.log("Searching TMDb API for movie: " + movie);
+    theMovieDb.search.getMovie({ "query": encodeURIComponent(movie.trim()) }, onSuccess, onError);
+  }, [movie]);
 
 
   const searchUser = async () => {
@@ -95,6 +116,7 @@ function App() {
 
     const image = randomMovie.getElementsByClassName('image').item(0);
     console.log(image.alt)
+    setMovie(image.alt);
 
   }
 
@@ -115,7 +137,7 @@ function App() {
       <Content style={{ padding: '100px 16px' }}>
 
         <Row justify="center" gutter={[32, 32]}>
-          <Col span={20}>
+          <Col span={18}>
             <Card style={{ borderRadius: '1.25em' }} hoverable>
               <h1>🎥 Letterboxd Watchlist Roulette</h1>
               <Input.Search
@@ -133,7 +155,7 @@ function App() {
 
 
         <Row justify="center" gutter={[32, 32]}>
-          <Col span={20}>
+          <Col span={18}>
             <Card style={{ borderRadius: '1.25em' }} hoverable>
               <Row justify="space-between">
                 <h1>{watchlistLength} Movies Found</h1>
@@ -166,7 +188,7 @@ function App() {
       <Footer>
         <Row justify="space-between">
           <Col>
-            <Title level={5}>
+            <Title style={{ fontSize: '1.25rem' }}>
               Emmanuel Macario
             </Title>
           </Col>
